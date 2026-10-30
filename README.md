@@ -1,5 +1,7 @@
 # Library App — kutubxona boshqaruvi (REST API)
 
+![CI](https://github.com/sardorofical1234-prog/library-app/actions/workflows/ci.yml/badge.svg)
+
 Java 21 · Spring Boot 4.1 · Spring Data JPA · Spring Security (HTTP Basic) · PostgreSQL · Lombok
 
 ## Imkoniyatlar
