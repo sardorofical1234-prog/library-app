@@ -44,7 +44,7 @@ Swagger UI: http://localhost:8080/swagger-ui.html (Authorize tugmasi: `admin` / 
 |---|---|---|---|
 | POST | /api/auth/register | hamma | Ro'yxatdan o'tish |
 | GET | /api/auth/me | login | Men kimman |
-| GET | /api/books?search=java | login | Kitoblar (qidiruv ixtiyoriy) |
+| GET | /api/books?search=java&page=0&size=10 | login | Kitoblar (qidiruv va sahifalash ixtiyoriy) |
 | GET | /api/books/{id} | login | Bitta kitob |
 | POST | /api/books | ADMIN | Kitob qo'shish |
 | PUT | /api/books/{id} | ADMIN | Kitobni o'zgartirish |

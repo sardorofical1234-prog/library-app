@@ -2,33 +2,42 @@ package com.library.demo.service;
 
 import com.library.demo.dto.BookRequest;
 import com.library.demo.dto.BookResponse;
+import com.library.demo.dto.PageResponse;
 import com.library.demo.entity.Book;
 import com.library.demo.exception.ApiException;
 import com.library.demo.repository.BookRepository;
 import com.library.demo.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
 
+    private static final int MAX_PAGE_SIZE = 50;
+
     private final BookRepository bookRepository;
     private final LoanRepository loanRepository;
 
     @Transactional(readOnly = true)
-    public List<BookResponse> list(String search) {
-        List<Book> books;
+    public PageResponse<BookResponse> list(String search, int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by("title"));
+
+        Page<Book> books;
         if (search == null || search.isBlank()) {
-            books = bookRepository.findAll(Sort.by("title"));
+            books = bookRepository.findAll(pageable);
         } else {
-            books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(search, search);
+            books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+                    search, search, pageable);
         }
-        return books.stream().map(BookResponse::from).toList();
+        return PageResponse.from(books.map(BookResponse::from));
     }
 
     @Transactional(readOnly = true)
