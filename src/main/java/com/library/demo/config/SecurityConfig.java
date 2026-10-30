@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // Kitoblarni ko'rish - har qanday login qilgan foydalanuvchi
                         .requestMatchers(HttpMethod.GET, "/api/books/**").authenticated()
                         // Kitob qo'shish/o'zgartirish/o'chirish - faqat ADMIN

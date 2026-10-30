@@ -38,6 +38,8 @@ com.library.demo
 ```
 
 ## API
+Swagger UI: http://localhost:8080/swagger-ui.html (Authorize tugmasi: `admin` / `admin123`)
+
 | Metod | URL | Kim | Tavsif |
 |---|---|---|---|
 | POST | /api/auth/register | hamma | Ro'yxatdan o'tish |
