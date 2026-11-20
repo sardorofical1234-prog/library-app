@@ -78,7 +78,7 @@ curl -u admin:admin123 -X POST localhost:8080/api/books -H "Content-Type: applic
   -d '{"title":"Head First Java","author":"Kathy Sierra","isbn":"978-0596009205","publishedYear":2005,"totalCopies":2}'
 ```
 
-## Keyingi qadamlar (o'rganish uchun)
+## Keyingi qadamlar 
 - JWT autentifikatsiya
 - Pagination (`Pageable`)
 - Swagger/OpenAPI (springdoc)
