@@ -84,7 +84,8 @@ public class BookService {
 
     @Transactional
     public void delete(Long id) {
-        Book book = findOrThrow(id);
+        Book book = bookRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> ApiException.notFound("Kitob topilmadi: id=" + id));
         if (loanRepository.existsByBookId(id)) {
             throw ApiException.conflict("Bu kitob bo'yicha ijara tarixi bor, o'chirib bo'lmaydi");
         }

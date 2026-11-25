@@ -78,7 +78,7 @@ class BookServiceTest {
 
     @Test
     void delete_bookWithLoans_throwsConflict() {
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(existingBook(2, 2)));
+        when(bookRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(existingBook(2, 2)));
         when(loanRepository.existsByBookId(1L)).thenReturn(true);
 
         ApiException ex = assertThrows(ApiException.class, () -> bookService.delete(1L));

@@ -10,20 +10,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
-
-    private static final String BASIC_AUTH = "basicAuth";
+    private static final String BEARER_AUTH = "bearerAuth";
 
     @Bean
     public OpenAPI libraryOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Library App API")
-                        .version("1.0")
-                        .description("Kutubxona boshqaruvi: kitoblar va ijaralar"))
-                .addSecurityItem(new SecurityRequirement().addList(BASIC_AUTH))
-                .components(new Components().addSecuritySchemes(BASIC_AUTH,
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("basic")));
+                .info(new Info().title("Library App API").version("2.0")
+                        .description("Kutubxona boshqaruvi: foydalanuvchilar, kitoblar va ijaralar"))
+                .addSecurityItem(new SecurityRequirement().addList(BEARER_AUTH))
+                .components(new Components().addSecuritySchemes(BEARER_AUTH,
+                        new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
     }
 }

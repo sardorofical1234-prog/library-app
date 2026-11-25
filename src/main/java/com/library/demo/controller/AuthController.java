@@ -1,5 +1,7 @@
 package com.library.demo.controller;
 
+import com.library.demo.dto.AuthResponse;
+import com.library.demo.dto.LoginRequest;
 import com.library.demo.dto.RegisterRequest;
 import com.library.demo.dto.UserResponse;
 import com.library.demo.service.AuthService;
@@ -13,13 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService authService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 
     @GetMapping("/me")

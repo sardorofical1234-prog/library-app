@@ -7,14 +7,26 @@ spring:
     password: ${DB_PASSWORD:postgres}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
 server:
   port: 8080
 
-# Kutubxona qoidalari
+security:
+  jwt:
+    secret-base64: ${JWT_SECRET_BASE64:}
+    issuer: library-app
+    access-token-ttl-seconds: 900
+
 library:
   loan-days: 14
   max-active-loans: 3
+  bootstrap-admin:
+    full-name: ${BOOTSTRAP_ADMIN_FULL_NAME:Kutubxonachi}
+    username: ${BOOTSTRAP_ADMIN_USERNAME:}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:}
