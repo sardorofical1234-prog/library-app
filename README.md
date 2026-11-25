@@ -117,13 +117,21 @@ In Swagger UI, use **Authorize** and paste the access token. Do not include the 
 
 The unit tests use JUnit 5 and Mockito. The integration test starts the Spring application against PostgreSQL and verifies Flyway schema creation, registration, login/JWT decoding, borrowing, and returning.
 
-Run the full test suite with PostgreSQL available:
+Run the full test suite with PostgreSQL available. When running tests locally, export the connection settings and a private test signing key first:
 
 ~~~bash
+export DB_URL=jdbc:postgresql://localhost:5433/library
+export DB_USER=postgres
+export DB_PASSWORD=your-local-database-password
+export JWT_SECRET_BASE64="$(openssl rand -base64 32)"
 ./mvnw -B clean verify
 ~~~
 
-GitHub Actions starts a PostgreSQL 17 service and runs the same command on every push and pull request to <code>main</code>.
+On Windows PowerShell, set the equivalent `$env:DB_URL`, `$env:DB_USER`, `$env:DB_PASSWORD`, and `$env:JWT_SECRET_BASE64` variables before running `mvnw.cmd -B clean verify`.
+
+The PostgreSQL integration test runs in a transaction and rolls its changes back. It uses unique test records and does not delete existing books, users or loans in your local database.
+
+GitHub Actions starts an isolated PostgreSQL 17 service and runs the same Maven command on every push and pull request to <code>main</code>.
 
 ## Project structure
 
