@@ -69,7 +69,7 @@ class BookServiceTest {
     @Test
     void update_totalLessThanBorrowed_throwsBadRequest() {
         // jami 5 ta, 3 tasi o'quvchilarda (available = 2)
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(existingBook(5, 2)));
+        when(bookRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(existingBook(5, 2)));
 
         ApiException ex = assertThrows(ApiException.class, () -> bookService.update(1L, request(2)));
 
