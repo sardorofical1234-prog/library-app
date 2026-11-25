@@ -14,13 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
-
     private static final int MAX_PAGE_SIZE = 50;
-
     private final BookRepository bookRepository;
     private final LoanRepository loanRepository;
 
@@ -29,13 +28,12 @@ public class BookService {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by("title"));
-
         Page<Book> books;
         if (search == null || search.isBlank()) {
             books = bookRepository.findAll(pageable);
         } else {
             books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
-                    search, search, pageable);
+                    search.trim(), search.trim(), pageable);
         }
         return PageResponse.from(books.map(BookResponse::from));
     }
@@ -47,13 +45,14 @@ public class BookService {
 
     @Transactional
     public BookResponse create(BookRequest request) {
-        if (bookRepository.existsByIsbn(request.isbn())) {
-            throw ApiException.conflict("Bu ISBN bilan kitob allaqachon mavjud: " + request.isbn());
+        String isbn = normalizeIsbn(request.isbn());
+        if (bookRepository.existsByIsbn(isbn)) {
+            throw ApiException.conflict("Bu ISBN bilan kitob allaqachon mavjud: " + isbn);
         }
         Book book = new Book();
-        book.setTitle(request.title());
-        book.setAuthor(request.author());
-        book.setIsbn(request.isbn());
+        book.setTitle(request.title().trim());
+        book.setAuthor(request.author().trim());
+        book.setIsbn(isbn);
         book.setPublishedYear(request.publishedYear());
         book.setTotalCopies(request.totalCopies());
         book.setAvailableCopies(request.totalCopies());
@@ -62,20 +61,22 @@ public class BookService {
 
     @Transactional
     public BookResponse update(Long id, BookRequest request) {
-        Book book = findOrThrow(id);
-
-        if (!book.getIsbn().equals(request.isbn()) && bookRepository.existsByIsbn(request.isbn())) {
-            throw ApiException.conflict("Bu ISBN bilan kitob allaqachon mavjud: " + request.isbn());
+        Book book = bookRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> ApiException.notFound("Kitob topilmadi: id=" + id));
+        String isbn = normalizeIsbn(request.isbn());
+        if (!book.getIsbn().equals(isbn) && bookRepository.existsByIsbn(isbn)) {
+            throw ApiException.conflict("Bu ISBN bilan kitob allaqachon mavjud: " + isbn);
         }
 
         int borrowed = book.getTotalCopies() - book.getAvailableCopies();
         if (request.totalCopies() < borrowed) {
-            throw ApiException.badRequest("Hozir " + borrowed + " ta nusxa o'quvchilarda. Jami nusxa bundan kam bo'lishi mumkin emas");
+            throw ApiException.badRequest("Hozir " + borrowed
+                    + " ta nusxa o'quvchilarda. Jami nusxa bundan kam bo'lishi mumkin emas");
         }
 
-        book.setTitle(request.title());
-        book.setAuthor(request.author());
-        book.setIsbn(request.isbn());
+        book.setTitle(request.title().trim());
+        book.setAuthor(request.author().trim());
+        book.setIsbn(isbn);
         book.setPublishedYear(request.publishedYear());
         book.setTotalCopies(request.totalCopies());
         book.setAvailableCopies(request.totalCopies() - borrowed);
@@ -95,5 +96,9 @@ public class BookService {
     private Book findOrThrow(Long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> ApiException.notFound("Kitob topilmadi: id=" + id));
+    }
+
+    private String normalizeIsbn(String isbn) {
+        return isbn.trim().toUpperCase(Locale.ROOT);
     }
 }
